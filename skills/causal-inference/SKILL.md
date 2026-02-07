@@ -420,6 +420,209 @@ context_switches → error_rate
     └── 6+ switches: 35% error rate
 ```
 
+## API Reference
+
+### CausalModel Class
+
+```python
+from causal import CausalModel
+
+model = CausalModel(config_path="memory/causal/config.yaml")
+```
+
+#### Methods
+
+##### `predict(action, context)`
+
+Predict outcome before taking action.
+
+**Parameters:**
+- `action` (str): Action type (e.g., "send_email", "create_meeting")
+- `context` (dict): Action context
+
+**Returns:**
+- `Prediction` object with:
+  - `probability` (float): Predicted outcome probability
+  - `uncertainty` (float): Uncertainty bounds (0-1)
+  - `expected_utility` (float): Expected utility score
+
+**Example:**
+```python
+prediction = model.predict(
+    action="send_email",
+    context={
+        "recipient_type": "warm_lead",
+        "send_time": "morning",
+        "subject_style": "question"
+    }
+)
+
+print(f"Reply probability: {prediction.probability:.1%}")
+print(f"Uncertainty: {prediction.uncertainty:.1%}")
+
+if prediction.uncertainty > 0.3:
+    print("⚠️ High uncertainty - confirm with user")
+```
+
+##### `log_action(action, context, pre_state)`
+
+Log an action before execution.
+
+**Parameters:**
+- `action` (str): Action type
+- `context` (dict): Action context
+- `pre_state` (dict): Current state before action
+
+**Example:**
+```python
+model.log_action(
+    action="send_email",
+    context={"recipient": "client@company.com"},
+    pre_state={"days_since_contact": 7}
+)
+```
+
+##### `log_outcome(action_id, outcome, post_state)`
+
+Log the outcome after action completion.
+
+**Parameters:**
+- `action_id` (str): Action ID from log_action
+- `outcome` (str): Observed outcome ("positive", "negative", "neutral")
+- `post_state` (dict): State after action
+
+**Example:**
+```python
+model.log_outcome(
+    action_id="action_123",
+    outcome="positive",
+    post_state={"reply_received": True, "reply_delay_hours": 4}
+)
+```
+
+##### `update_estimates(treatment, outcome, new_data)`
+
+Update treatment effect estimates with new data.
+
+**Parameters:**
+- `treatment` (str): Treatment variable (e.g., "send_time")
+- `outcome` (str): Outcome variable (e.g., "reply_probability")
+- `new_data` (list): New observations
+
+**Example:**
+```python
+model.update_estimates(
+    treatment="send_time",
+    outcome="reply_probability",
+    new_data=[
+        {"treatment": "morning", "outcome": 0.35},
+        {"treatment": "evening", "outcome": 0.22}
+    ]
+)
+```
+
+##### `debug_failure(action_id)`
+
+Debug why an action failed by tracing causal chains.
+
+**Parameters:**
+- `action_id` (str): Failed action ID
+
+**Returns:**
+- `CausalTrace` object with:
+  - `root_cause` (str): Identified root cause
+  - `chain` (list): Causal chain
+  - `recommendations` (list): Suggested fixes
+
+**Example:**
+```python
+trace = model.debug_failure("action_456")
+print(f"Root cause: {trace.root_cause}")
+print(f"Chain: {' -> '.join(trace.chain)}")
+for rec in trace.recommendations:
+    print(f"  - {rec}")
+```
+
+##### `query_pattern(treatment, outcome)`
+
+Query learned patterns for a treatment-outcome pair.
+
+**Parameters:**
+- `treatment` (str): Treatment variable
+- `outcome` (str): Outcome variable
+
+**Returns:**
+- `Pattern` object with:
+  - `estimates` (dict): Current estimates
+  - `confidence` (float): Confidence level
+  - `sample_size` (int): Number of observations
+
+**Example:**
+```python
+pattern = model.query_pattern("send_time", "reply_probability")
+print(f"Morning: {pattern.estimates['morning']:.1%}")
+print(f"Confidence: {pattern.confidence:.1%}")
+```
+
+### Configuration Functions
+
+##### `load_config(config_path)`
+
+Load configuration from YAML file.
+
+**Parameters:**
+- `config_path` (str): Path to config.yaml
+
+**Returns:**
+- `CausalConfig` object
+
+##### `save_config(config, config_path)`
+
+Save configuration to YAML file.
+
+**Parameters:**
+- `config` (CausalConfig): Configuration object
+- `config_path` (str): Output file path
+
+### Utility Functions
+
+##### `is_protected_action(action)`
+
+Check if an action requires user approval.
+
+**Parameters:**
+- `action` (str): Action type
+
+**Returns:**
+- `bool`: True if action is protected
+
+**Example:**
+```python
+if is_protected_action("delete_email"):
+    print("⚠️ This action requires user approval")
+```
+
+##### `check_safety(prediction)`
+
+Check if prediction meets safety thresholds.
+
+**Parameters:**
+- `prediction` (Prediction): Prediction from model
+
+**Returns:**
+- `SafetyResult` with:
+  - `safe` (bool): Whether action is safe
+  - `reasons` (list): Reasons if not safe
+
+**Example:**
+```python
+result = check_safety(prediction)
+if not result.safe:
+    print("Action blocked due to:")
+    for reason in result.reasons:
+        print(f"  - {reason}")
+```
+
 ## Files
 
 - `memory/causal/action_log.jsonl` - All logged actions

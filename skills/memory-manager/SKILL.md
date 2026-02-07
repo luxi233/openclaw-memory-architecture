@@ -27,6 +27,91 @@ memory-manager provides **human-like memory organization**:
 | **Semantic** | Knowledge | Facts, concepts, topics | "REST APIs use HTTP methods" |
 | **Procedural** | Skills | Workflows, processes, how-tos | "How to deploy to production" |
 
+## Installation
+
+### Option 1: Clone Repository
+
+```bash
+# Clone the skill
+git clone https://github.com/infinitelab/openclaw-memory-architecture.git
+cd openclaw-memory-architecture/skills/memory-manager
+
+# Copy to OpenClaw skills directory
+cp -r memory-manager ~/.openclaw/workspace/skills/
+```
+
+### Option 2: Copy Files Manually
+
+```bash
+# Create skill directory
+mkdir -p ~/.openclaw/workspace/skills/memory-manager
+
+# Copy SKILL.md
+cp SKILL.md ~/.openclaw/workspace/skills/memory-manager/
+
+# Create memory directories
+mkdir -p ~/.openclaw/workspace/memory/{episodic,semantic,procedural}
+
+# Initialize directory structure
+cat > ~/.openclaw/workspace/memory-manager/init.sh << 'EOF'
+#!/bin/bash
+# Initialize memory-manager directories
+
+# Create episodic directory
+mkdir -p memory/episodic
+
+# Create semantic subdirectories
+mkdir -p memory/semantic/{topics,concepts,entities}
+
+# Create procedural subdirectories
+mkdir -p memory/procedural/{workflows,checklists,automation}
+
+# Create state file
+cat > memory/.memory-manager-state.json << 'JSON'
+{
+  "version": "1.0.0",
+  "initialized_at": "$(date -Iseconds)",
+  "last_backup": null
+}
+JSON
+
+echo "✅ Memory directories initialized"
+EOF
+
+chmod +x ~/.openclaw/workspace/memory-manager/init.sh
+```
+
+### Enable in OpenClaw
+
+Edit `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "skills": {
+    "entries": {
+      "memory-manager": {
+        "enabled": true
+      }
+    }
+  }
+}
+```
+
+Then restart OpenClaw:
+
+```bash
+openclaw gateway restart
+```
+
+### Initialize Memory Directories
+
+```bash
+# Run initialization script
+~/.openclaw/workspace/memory-manager/init.sh
+```
+
+---
+
 ## Why Three-Tier?
 
 ### 1. Episodic Memory (What Happened)

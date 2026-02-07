@@ -1,0 +1,23 @@
+# Causal Inference Configuration
+
+domains:
+  - email
+  - calendar
+  - messaging
+  - tasks
+  - files
+
+thresholds:
+  max_uncertainty: 0.3
+  min_expected_utility: 0.1
+
+protected_actions:
+  - delete_email
+  - cancel_meeting
+  - send_to_new_contact
+  - financial_transaction
+  - delete_file
+  - git_force_push
+
+# 默认因果图文件
+graph_file: memory/causal/graphs/default.yaml

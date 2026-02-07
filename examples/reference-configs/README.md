@@ -6,23 +6,55 @@
 
 ```
 examples/reference-configs/
+│
 ├── SESSION-STATE.md              # 活跃任务状态模板
 ├── MEMORY.md                      # 长期记忆配置
 ├── AGENTS.md                      # Agent 配置
-├── config-memory-manager.json     # memory-manager 状态
+│
+├── openclaw-config/              # OpenClaw 主配置
+│   ├── openclaw.json             # 主配置文件（skills 启用配置）
+│   └── mcporter.jsonc            # MCP Server 配置
 │
 ├── config-memory-causal/          # 因果推理配置
-│   ├── action_log.jsonl          # 行动日志
-│   ├── config.yaml               # 因果推理配置
+│   ├── action_log.jsonl.example  # 行动日志示例
+│   ├── config.yaml.example       # 因果推理配置
 │   └── graphs/
-│       └── default.yaml           # 默认因果图
+│       └── default.yaml.example   # 因果图定义
+│
+├── config-memory-manager.json.example # memory-manager 状态
 │
 └── skills/                        # Skills 实现参考
-    ├── agent-memory-hook.py      # 会话 Hook 脚本
-    └── memory.py                  # agent-memory 核心实现
+    ├── agent-memory-hook.py.example # 会话 Hook 脚本
+    └── memory.py.example            # agent-memory 核心实现
 ```
 
 ## 文件说明
+
+### openclaw-config/
+
+**openclaw.json** - OpenClaw 主配置文件
+```json
+{
+  "skills": {
+    "entries": {
+      "bulletproof-memory": { "enabled": true },
+      "agent-memory": { "enabled": true },
+      "causal-inference": { "enabled": true },
+      "memory-manager": { "enabled": true }
+    }
+  }
+}
+```
+
+**mcporter.jsonc** - MCP Server 配置
+```json
+{
+  "mcpServers": {
+    "cli-proxy-management": { ... },
+    "minimax-usage": { ... }
+  }
+}
+```
 
 ### SESSION-STATE.md
 bulletproof-memory 的活跃任务状态文件模板，包含：
@@ -47,14 +79,14 @@ Agent 配置文件，包含：
 
 ### config-memory-causal/
 因果推理的实际配置：
-- `action_log.jsonl` - 真实行动日志示例
-- `config.yaml` - 完整配置
-- `graphs/default.yaml` - 因果图定义
+- `action_log.jsonl.example` - 真实行动日志示例
+- `config.yaml.example` - 完整配置
+- `graphs/default.yaml.example` - 因果图定义
 
 ### skills/
 Skills 的实际实现代码：
-- `agent-memory-hook.py` - 会话自动化 Hook
-- `memory.py` - agent-memory 核心逻辑
+- `agent-memory-hook.py.example` - 会话自动化 Hook
+- `memory.py.example` - agent-memory 核心逻辑
 
 ## 使用方法
 
