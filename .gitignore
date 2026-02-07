@@ -44,11 +44,14 @@ Thumbs.db
 .coverage
 htmlcov/
 
-# Memory/Data (user-specific)
+# Memory/Data (user-specific - DO NOT COMMIT)
 ~/.agent-memory/
 ~/.cache/qmd/
-~/.openclaw/workspace/memory/
-~/.openclaw/workspace/SESSION-STATE.md
+
+# Reference configs - commit these as examples
+# (they contain actual production configs for reference)
+examples/reference-configs/
+!examples/reference-configs/README.md
 
 # Temporary
 tmp/
@@ -59,3 +62,6 @@ temp/
 *.env
 *.secrets
 *.key
+
+# OS-specific
+.DS_Store

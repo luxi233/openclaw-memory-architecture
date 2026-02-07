@@ -1,0 +1,40 @@
+# 默认因果图
+
+# 沟通域
+email:
+  nodes:
+    send_time: "发送时间 (morning/afternoon/evening)"
+    subject_style: "主题风格 (short/long/question)"
+    recipient_type: "收件人类型 (new/warm/cold)"
+    prior_touches: "之前接触次数"
+    followup_count: "跟进次数"
+  
+  edges:
+    - [send_time, reply_prob, "发送时间影响回复概率"]
+    - [subject_style, open_rate, "主题风格影响打开率"]
+    - [recipient_type, reply_prob, "收件人类型影响回复概率"]
+    - [prior_touches, reply_prob, "之前接触次数影响回复概率"]
+
+calendar:
+  nodes:
+    meeting_time: "会议时间"
+    attendee_count: "参会人数"
+    conflict_degree: "冲突程度"
+    buffer_time: "缓冲时间"
+  
+  edges:
+    - [meeting_time, attendance_rate, "会议时间影响出席率"]
+    - [attendee_count, slip_risk, "参会人数影响缺席风险"]
+    - [conflict_degree, reschedule_prob, "冲突程度影响重新安排概率"]
+
+tasks:
+  nodes:
+    due_date_proximity: "截止日期临近程度"
+    priority_level: "优先级"
+    task_size: "任务大小"
+    context_switches: "上下文切换次数"
+  
+  edges:
+    - [due_date_proximity, completion_prob, "截止日期临近程度影响完成概率"]
+    - [priority_level, completion_speed, "优先级影响完成速度"]
+    - [context_switches, error_rate, "上下文切换次数影响错误率"]
