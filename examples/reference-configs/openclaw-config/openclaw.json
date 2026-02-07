@@ -1,0 +1,382 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.3-1",
+    "lastTouchedAt": "2026-02-07T05:23:58.056Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-06T15:08:31.701Z",
+    "lastRunVersion": "2026.2.3-1",
+    "lastRunCommand": "doctor",
+    "lastRunMode": "local"
+  },
+  "browser": {
+    "enabled": true
+  },
+  "ui": {
+    "assistant": {
+      "name": "Luxi",
+      "avatar": "🦭"
+    }
+  },
+  "auth": {
+    "profiles": {
+      "minimax:default": {
+        "provider": "minimax",
+        "mode": "api_key"
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "minimax": {
+        "baseUrl": "https://api.minimaxi.com/anthropic",
+        "apiKey": "sk-cp-5kaw3x-7fO74KPvs28jqFqCxUt4bH0wiAvW7IykXESSV8xPd0j3BozGh_eISJqxcrCwidw_3ijglKc6Kn8pplJ4aNVLfwBTWxdVkwxAw4m4Umzq5RRSuKqU",
+        "api": "anthropic-messages",
+        "models": [
+          {
+            "id": "MiniMax-M2.1",
+            "name": "MiniMax M2.1",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 15,
+              "output": 60,
+              "cacheRead": 2,
+              "cacheWrite": 10
+            },
+            "contextWindow": 200000,
+            "maxTokens": 8192
+          }
+        ]
+      },
+      "cli-proxy-codex": {
+        "baseUrl": "http://localhost:8317/v1",
+        "apiKey": "87251310111",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "gpt-5.3-codex",
+            "name": "Codex 5.2",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 10,
+              "output": 40,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 100000
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "minimax/MiniMax-M2.1"
+      },
+      "models": {
+        "minimax/MiniMax-M2.1": {
+          "alias": "Minimax"
+        }
+      },
+      "workspace": "/Users/infinitelab/.openclaw/workspace",
+      "memorySearch": {
+        "enabled": true,
+        "sources": [
+          "memory",
+          "sessions"
+        ],
+        "extraPaths": [
+          "memory/episodic",
+          "memory/semantic",
+          "memory/procedural"
+        ],
+        "provider": "local",
+        "fallback": "none",
+        "local": {
+          "modelPath": "/Users/infinitelab/.cache/qmd/models/hf_ggml-org_embeddinggemma-300M-Q8_0.gguf"
+        },
+        "store": {
+          "path": "/Users/infinitelab/.openclaw/memory/{agentId}.sqlite",
+          "vector": {
+            "enabled": true
+          }
+        },
+        "sync": {
+          "onSessionStart": true,
+          "onSearch": true,
+          "watch": true,
+          "watchDebounceMs": 15000,
+          "intervalMinutes": 30,
+          "sessions": {
+            "deltaBytes": 100000,
+            "deltaMessages": 50
+          }
+        },
+        "query": {
+          "hybrid": {
+            "enabled": true,
+            "vectorWeight": 0.7,
+            "textWeight": 0.3,
+            "candidateMultiplier": 4
+          }
+        },
+        "cache": {
+          "enabled": true,
+          "maxEntries": 50000
+        }
+      },
+      "compaction": {
+        "mode": "safeguard",
+        "reserveTokensFloor": 20000,
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 4000,
+          "prompt": "Write any lasting notes to memory/YYYY-MM-DD.md; reply with NO_REPLY if nothing to store."
+        }
+      },
+      "heartbeat": {
+        "every": "30m",
+        "target": "last"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "model": "minimax/MiniMax-M2.1",
+        "subagents": {
+          "allowAgents": [
+            "learning-agent",
+            "companion-agent",
+            "coding-agent"
+          ]
+        }
+      },
+      {
+        "id": "learning-agent",
+        "model": "minimax/MiniMax-M2.1",
+        "subagents": {
+          "allowAgents": [
+            "main",
+            "companion-agent"
+          ]
+        }
+      },
+      {
+        "id": "companion-agent",
+        "model": "minimax/MiniMax-M2.1",
+        "subagents": {
+          "allowAgents": [
+            "learning-agent"
+          ]
+        }
+      },
+      {
+        "id": "coding-agent",
+        "model": "cli-proxy-codex/gpt-5.3-codex",
+        "subagents": {
+          "allowAgents": [
+            "main"
+          ]
+        }
+      }
+    ]
+  },
+  "tools": {
+    "exec": {}
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "session-memory": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "channels": {
+    "imessage": {
+      "capabilities": [
+        "attachments"
+      ],
+      "enabled": true,
+      "cliPath": "/opt/homebrew/bin/imsg",
+      "dmPolicy": "pairing",
+      "groupPolicy": "allowlist",
+      "includeAttachments": true
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "34a93538c3df59df1ed3d0ea669489bf3f4ab355ffeb4f21"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "memory": {
+    "backend": "qmd",
+    "qmd": {
+      "command": "/Users/infinitelab/.bun/bin/qmd",
+      "update": {
+        "interval": "5m",
+        "debounceMs": 15000,
+        "onBoot": true
+      }
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "pnpm"
+    },
+    "entries": {
+      "apple-notes": {
+        "enabled": true
+      },
+      "apple-reminders": {
+        "enabled": true
+      },
+      "auto-updater": {
+        "enabled": true
+      },
+      "clawdhub-manager": {
+        "enabled": true
+      },
+      "coding-agent": {
+        "enabled": true
+      },
+      "daily-backup": {
+        "enabled": true
+      },
+      "daily-recap": {
+        "enabled": true
+      },
+      "daily-summary": {
+        "enabled": true
+      },
+      "excel-mcp": {
+        "enabled": true
+      },
+      "image-understanding": {
+        "enabled": true
+      },
+      "imsg-attachments": {
+        "enabled": true
+      },
+      "learning-plan": {
+        "enabled": true
+      },
+      "mcporter": {
+        "enabled": true
+      },
+      "memory-manager": {
+        "enabled": true
+      },
+      "memory-setup": {
+        "enabled": true
+      },
+      "minimax-mcp": {
+        "enabled": true
+      },
+      "minimax-usage": {
+        "enabled": true
+      },
+      "model-usage": {
+        "enabled": true
+      },
+      "obsidian": {
+        "enabled": true
+      },
+      "opencode-controller": {
+        "enabled": true
+      },
+      "peekaboo": {
+        "enabled": true
+      },
+      "session-logs": {
+        "enabled": true
+      },
+      "subagent-workflow": {
+        "enabled": true
+      },
+      "summarize": {
+        "enabled": true
+      },
+      "test-scripts": {
+        "enabled": true
+      },
+      "usage-guardian": {
+        "enabled": true
+      },
+      "web-access-guide": {
+        "enabled": true
+      },
+      "cli-proxy-management": {
+        "enabled": true
+      },
+      "codex-orchestration": {
+        "enabled": true
+      },
+      "debug-pro": {
+        "enabled": true
+      },
+      "test-runner": {
+        "enabled": true
+      },
+      "multi-coding-agent": {
+        "enabled": true
+      },
+      "prompt-log": {
+        "enabled": true
+      },
+      "tdd-guide": {
+        "enabled": true
+      },
+      "skill-creator": {
+        "enabled": true
+      },
+      "agent-memory": {
+        "enabled": true
+      },
+      "bulletproof-memory": {
+        "enabled": true
+      },
+      "causal-inference": {
+        "enabled": true
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "imessage": {
+        "enabled": true
+      }
+    }
+  }
+}

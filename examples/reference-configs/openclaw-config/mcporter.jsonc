@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "cli-proxy-management": {
+      "command": "python3",
+      "args": [
+        "/Users/infinitelab/.openclaw/workspace/mcp-servers/openclaw-mcp-cli-proxy/server.py"
+      ],
+      "env": {
+        "CLI_PROXY_BASE_URL": "http://localhost:8317",
+        "CLI_PROXY_MANAGEMENT_KEY": "87251310111"
+      }
+    }
+  }
+}

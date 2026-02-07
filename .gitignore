@@ -48,10 +48,13 @@ htmlcov/
 ~/.agent-memory/
 ~/.cache/qmd/
 
-# Reference configs - commit as .example files
+# Reference configs - commit as .example files and openclaw-config
 examples/reference-configs/*
 !examples/reference-configs/README.md
 !examples/reference-configs/*.example
+!examples/reference-configs/openclaw-config/
+!examples/reference-configs/openclaw-config/*.json
+!examples/reference-configs/openclaw-config/*.jsonc
 
 # Temporary
 tmp/
