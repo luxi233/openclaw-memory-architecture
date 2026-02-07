@@ -1,0 +1,143 @@
+# OpenClaw Memory Architecture Configuration
+# ============================================
+
+# This file contains the main configuration for the memory architecture
+# Copy this to ~/.openclaw/workspace/memory/config.yaml after installation
+
+# ===================
+# Core Configuration
+# ===================
+memory:
+  # Root directory for memory storage
+  root: ~/.openclaw/workspace/memory
+
+# ===================
+# Causal Inference
+# ===================
+causal:
+  # Directory for causal graphs
+  graphs_dir: memory/causal/graphs/
+
+  # Directory for treatment effect estimates
+  estimates_dir: memory/causal/estimates/
+
+  # Action log file
+  action_log: memory/causal/action_log.jsonl
+
+  # Enabled domains
+  domains:
+    - email
+    - calendar
+    - messaging
+    - tasks
+    - files
+
+  # Safety thresholds
+  thresholds:
+    max_uncertainty: 0.3      # 30% - Don't act if uncertain
+    min_expected_utility: 0.1 # 10% - Don't act if low expected gain
+
+  # Protected actions (require user approval)
+  protected_actions:
+    - delete_email
+    - cancel_meeting
+    - send_to_new_contact
+    - financial_transaction
+    - delete_file
+    - git_force_push
+
+# ===================
+# Agent Memory (SQLite)
+# ===================
+agent_memory:
+  # Database path
+  db_path: ~/.agent-memory/memory.db
+
+  # Auto-save interval (seconds)
+  save_interval: 60
+
+  # Enable auto-learning from actions
+  auto_learn: true
+
+  # Maximum lessons to retain
+  max_lessons: 1000
+
+# ===================
+# Bulletproof Memory (WAL)
+# ===================
+bulletproof:
+  # Session state file
+  session_state: ~/.openclaw/workspace/SESSION-STATE.md
+
+  # Auto-write on user input
+  auto_write: true
+
+  # Enable context recovery
+  recovery_enabled: true
+
+  # Backup interval (minutes)
+  backup_interval: 30
+
+# ===================
+# Memory Manager
+# ===================
+memory_manager:
+  # Root directory
+  root: memory/
+
+  # Directory structure
+  directories:
+    episodic: memory/episodic/
+    semantic: memory/semantic/
+    procedural: memory/procedural/
+
+  # Auto-create directories
+  auto_create: true
+
+# ===================
+# QMD (Vector Search)
+# ===================
+qmd:
+  # Cache directory
+  cache: ~/.cache/qmd/
+
+  # Embedding model
+  # Options: all-MiniLM-L6-v2, all-mpnet-base-v2
+  embedding_model: all-MiniLM-L6-v2
+
+  # Chunk settings
+  chunk_size: 512
+  chunk_overlap: 50
+
+  # Index settings
+  index:
+    type: hnsw
+    metric: cosine
+    ef_construction: 200
+    M: 16
+
+  # Search settings
+  search:
+    default_top_k: 5
+    similarity_threshold: 0.7
+
+# ===================
+# Integration Settings
+# ===================
+integration:
+  # Enable automatic integration
+  auto_integrate: true
+
+  # Order of operations during session start
+  startup_order:
+    - bulletproof    # Read SESSION-STATE.md first
+    - agent_memory   # Load from SQLite
+    - memory_manager  # Load daily notes
+    - qmd            # Index semantic memory
+
+  # Order of operations during session end
+  shutdown_order:
+    - bulletproof    # Update SESSION-STATE.md
+    - agent_memory   # Persist learnings
+    - memory_manager # Update daily notes
+    - qmd            # Re-index if needed
