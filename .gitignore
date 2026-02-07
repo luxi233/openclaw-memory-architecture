@@ -48,10 +48,10 @@ htmlcov/
 ~/.agent-memory/
 ~/.cache/qmd/
 
-# Reference configs - commit these as examples
-# (they contain actual production configs for reference)
-examples/reference-configs/
+# Reference configs - commit as .example files
+examples/reference-configs/*
 !examples/reference-configs/README.md
+!examples/reference-configs/*.example
 
 # Temporary
 tmp/
