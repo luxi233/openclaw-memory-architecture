@@ -8,3 +8,6 @@ pyyaml>=6.0
 
 # Optional: For better performance
 # sqlite3 is included in Python standard library
+
+# Causal Inference
+pyyaml>=6.0
