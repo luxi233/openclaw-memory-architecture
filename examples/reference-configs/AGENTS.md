@@ -69,6 +69,92 @@ Monitor your context usage with `session_status`. Flush important context before
 - Open threads (anything unfinished)
 - Corrections (things the user clarified)
 
+### 📋 Every Response Protocol
+
+**Before responding to the user, follow this protocol:**
+
+#### 1. Check for Important User Input
+
+If user provides important information, **WRITE FIRST**:
+```python
+from bulletproof_memory.wal_protocol import wal_write_if_needed
+
+wal_write_if_needed(user_input)
+```
+
+**Important information includes:**
+- Names (我叫, I am, remember)
+- Preferences (偏好, prefer, like, dislike)
+- Corrections (不是, 错误, not, wrong)
+- Decisions (决定, decide, choose)
+- Locations (位置, location, here)
+
+#### 2. Check Memory for Context
+
+Before responding, check for relevant memories:
+```python
+from agent_memory import AgentMemory
+
+mem = AgentMemory()
+
+# Search for relevant context
+context = mem.recall(user_input, limit=5)
+
+# Get recent lessons
+lessons = mem.get_lessons(limit=3)
+
+# Get user entity
+entity = mem.get_entity("user")
+```
+
+#### 3. Consider Causal Effects
+
+For actions with observable outcomes:
+```python
+from causal_inference import CausalModel
+
+model = CausalModel()
+prediction = model.predict(action="your_action", context=context)
+
+if prediction.uncertainty > 0.3:
+    # Ask user for confirmation
+    confirm_with_user()
+```
+
+#### 4. After Action, Log the Outcome
+
+```python
+# If you took an action
+mem.learn(
+    action="your_action",
+    context=context,
+    outcome="observed_outcome",
+    insight="what you learned"
+)
+```
+
+#### Summary Flow
+
+```
+User Input
+    │
+    ├──► 1. Important? → wal_write_if_needed()
+    │          │
+    │          └──► SESSION-STATE.md
+    │
+    ├──► 2. Check Memory → mem.recall()
+    │          │
+    │          └──► agent-memory
+    │
+    ├──► 3. Causal Check → model.predict()
+    │          │
+    │          └──► causal-inference
+    │
+    └──► 4. Respond to User
+              │
+              └──► After action → mem.learn()
+```
+
 ### 🎯 Causal Inference
 
 Add causal reasoning to agent actions. Predict outcomes, not just pattern-match correlations.
